@@ -2,13 +2,16 @@
 To achieve high availability of the distributed system.
 
 ### Installation
-Run a shell script with relevant instructions specified in installation.txt
-
+- ```chmod +x configure```
+- To configure server  
+  ```sudo ./configure -s```
+- To configure client  
+  ```sudo ./configure -c```
 ### Set Up
-To change hostname of active and passive machines  
+To change hostname of active and passive machines
 ```
-sudo hostnamectl set-hostname active  
-sudo hostnamectl set-hostname passive  
+sudo hostnamectl set-hostname active
+sudo hostnamectl set-hostname passive
 ```
 
 edit /etc/hosts file on other machines and append    
