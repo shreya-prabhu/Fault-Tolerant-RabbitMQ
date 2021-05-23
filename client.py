@@ -15,10 +15,10 @@ def receive():
     try:
             connection = pika.BlockingConnection(pika.ConnectionParameters(host='active',port=5672,credentials=pika.PlainCredentials("admin","password"),socket_timeout=10000))
             print('Connected to Active in Recieve Channel')
-    except Exceptions:
+    except pika.exceptions.ConnectionClosedByBroker:
             connection = pika.BlockingConnection(pika.ConnectionParameters(host = "passive",port=5672,credentials=pika.PlainCredentials("admin","password"),socket_timeout=10000))
             print('Connected to Passive in Recieve Channel')
-
+    print("Thread receive dint die")
     channel_receive = connection.channel()
     result = channel_receive.queue_declare(queue='', exclusive=True)
     queue_name = result.method.queue
@@ -27,16 +27,14 @@ def receive():
     print(' [*] Waiting for messages. To exit press CTRL+C')
     channel_receive.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
     channel_receive.start_consuming()
-    '''
-    while(1):
-        try:
-            channel_receive.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
-        except Exceptions:
-            connection = check_server()
-            channel_receive.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
-            channel_receive.start_consuming()
-            print('Connected to Passive in Receive Channel')
-    '''    
+    # while(1):
+    #     try:
+    #         channel_receive.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
+    #     except Exceptions:
+    #         connection = check_server()
+    #         channel_receive.basic_consume(queue=queue_name, on_message_callback=callback, auto_ack=True)
+    #         channel_receive.start_consuming()
+    #         print('Connected to Passive in Receive Channel')
 
 def check_server():
         global connection
@@ -57,11 +55,12 @@ def send():
     try:
         connection = pika.BlockingConnection(pika.ConnectionParameters(host='active',port=5672,credentials=pika.PlainCredentials("admin","password"),socket_timeout=10000))
         print('Connected to Active in Send Channel')
-    except Exceptions:
+    except pika.exceptions.ConnectionClosedByBroker:
 
         connection = pika.BlockingConnection(pika.ConnectionParameters(host = "passive",port=5672,credentials=pika.PlainCredentials("admin","password"),socket_timeout=10000))
         print('Connected to Passive in Send Channel')
 
+    print("Thread send dint die")
     channel_send = connection.channel()
     channel_send.queue_declare(queue='hello',durable=True)
     first = username + "\thas entered the chat"
@@ -73,7 +72,7 @@ def send():
         try:
             channel_send.basic_publish(exchange='', routing_key='hello', properties=pika.BasicProperties(correlation_id=corr_id), body=message)
 
-        except Exceptions:
+        except pika.exceptions.ConnectionClosedByBroker:
             connection = check_server()
             channel_send.basic_publish(exchange='', routing_key='hello', properties=pika.BasicProperties(correlation_id=corr_id), body=message)
             channel_send = connection.channel()
