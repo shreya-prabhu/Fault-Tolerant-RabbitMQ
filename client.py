@@ -117,14 +117,6 @@ def client():
                 print('Channel broke')
                 os._exit(0)
 
-
-
-        except KeyboardInterrupt:
-            print('You have exited')
-            last = username + "\thas left the chat"
-            channel_send.basic_publish(exchange='', routing_key='hello', properties=pika.BasicProperties(delivery_mode=2,correlation_id=corr_id), body=last)
-            os._exit(0)
-
         except : #Does not connect in beginning
             print('excp in client')
             # print(e)
@@ -162,5 +154,10 @@ if __name__ == '__main__':
         main()
         while(1):
             pass
-    except Exception as e:
-        print('exception in main',e)
+        
+    except KeyboardInterrupt:
+            print('You have exited')
+            last = username + "\thas left the chat"
+            channel_send.basic_publish(exchange='', routing_key='hello', properties=pika.BasicProperties(delivery_mode=2,correlation_id=corr_id), body=last)
+            os._exit(0)        
+            
