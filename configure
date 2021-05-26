@@ -1,0 +1,58 @@
+#!/bin/bash
+
+if [[ ${UID} -ne 0 ]]
+then
+    echo 'Please run with sudo or as root'
+    exit 1
+fi
+
+usage() {
+    echo ""
+    echo "Usage: sudo ${0} [-cs]" >&2
+    echo '      -s          To configure server'
+    echo '      -c          To configure client'
+    exit 1
+}
+
+while getopts sc OPTION
+do
+    case ${OPTION} in
+        c)
+            echo "Configuring Client"
+            echo ""
+            sudo apt update
+            sudo apt install gnupg2 apt-transport-https curl
+            curl https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc | sudo apt-key add -
+            echo "deb https://dl.bintray.com/rabbitmq/debian stretch main"              | sudo tee    /etc/apt/sources.list.d/rabbitmq.list
+            echo "deb https://dl.bintray.com/rabbitmq-erlang/debian buster erlang-22.x" | sudo tee -a /etc/apt/sources.list.d/rabbitmq.list
+            sudo apt update
+            sudo apt install rabbitmq-server
+            sudo apt install pip
+            python3 -m pip install pika
+            ;;
+        s)
+            echo "Configuring Server"
+            echo ""
+            sudo apt update
+            sudo apt install gnupg2 apt-transport-https curl
+            curl https://dl.bintray.com/rabbitmq/Keys/rabbitmq-release-signing-key.asc | sudo apt-key add -
+            echo "deb https://dl.bintray.com/rabbitmq/debian stretch main"              | sudo tee    /etc/apt/sources.list.d/rabbitmq.list
+            echo "deb https://dl.bintray.com/rabbitmq-erlang/debian buster erlang-22.x" | sudo tee -a /etc/apt/sources.list.d/rabbitmq.list
+            sudo apt update
+            sudo apt install rabbitmq-server
+            sudo systemctl stop rabbitmq-server
+            echo "JFKZVCBYEISEQILVZMSD" | sudo tee /var/lib/rabbitmq/.erlang.cookie
+            sudo systemctl start rabbitmq-server
+            rabbitmq-plugins enable rabbitmq_management
+            rabbitmqctl add_user admin password
+            rabbitmqctl set_user_tags admin administrator
+            rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
+            rabbitmqctl delete_user guest
+            sudo apt install pip
+            python3 -m pip install pika
+            ;;
+        ?)
+            usage
+            ;;
+    esac
+done
