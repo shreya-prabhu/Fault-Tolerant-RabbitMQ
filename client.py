@@ -154,9 +154,6 @@ def client():
         # send_thread.join()
         # receive_thread.join()
 def main():
-
-
-
     client()
 
 if __name__ == '__main__':

@@ -1,4 +1,3 @@
-
 import pika
 import sys
 import os
@@ -16,8 +15,7 @@ channel.exchange_declare(exchange='logs', exchange_type='fanout')
 
 
 def broadcast(body, props):
-    channel.basic_publish(exchange='logs', routing_key='',body=body, properties=                                                                             pika.BasicProperties(
-        correlation_id=props.correlation_id,delivery_mode = 2))
+    channel.basic_publish(exchange='logs', routing_key='',body=body, properties= pika.BasicProperties(correlation_id=props.correlation_id,delivery_mode = 2))
 
 
 def main():
