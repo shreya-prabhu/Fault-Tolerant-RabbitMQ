@@ -19,13 +19,6 @@ channel2 = connection2.channel()
 client_params = {"x-ha-policy": "all"}
 channel.exchange_declare(exchange='logs', exchange_type='fanout')
 
-def PassiveServer():
-        receive_from_clients = threading.Thread(target=messages_from_clients)
-        receive_from_clients.daemon = True
-        receive_from_clients.start()
-        receive_from_active = threading.Thread(target=messages_from_active)
-        receive_from_active.daemon = True
-        receive_from_active.start()
     
 def broadcast(body, props):
         channel.basic_publish(exchange='logs', routing_key='',body=body, properties= pika.BasicProperties(correlation_id=props.correlation_id,delivery_mode = 2))
@@ -56,9 +49,14 @@ def messages_from_active():
 if __name__ == '__main__':
     
     try:
-        PassiveServer()
-        while 1:
-            pass
+        receive_from_clients = threading.Thread(target=messages_from_clients)
+        receive_from_clients.daemon = True
+        receive_from_clients.start()
+        receive_from_active = threading.Thread(target=messages_from_active)
+        receive_from_active.daemon = True
+        receive_from_active.start()
+        receive_from_clients.join()
+        receive_from_active.join()
 
     except KeyboardInterrupt:
         print('Interrupted')
