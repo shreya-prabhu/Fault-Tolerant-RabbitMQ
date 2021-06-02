@@ -15,6 +15,13 @@ channel = connection.channel()
 client_params = {"x-ha-policy": "all"}
 channel.exchange_declare(exchange='logs', exchange_type='fanout')
 
+connection2 = pika.BlockingConnection(pika.ConnectionParameters(host = "passive",port=5672,credentials=cred))
+channel2 = connection2.channel()
+
+def sendtopassive(body,props):
+     channel.basic_publish(exchange='', routing_key='active-passive',body=body, properties = pika.BasicProperties(correlation_id=props.correlation_id,delivery_mode = 2))
+
+
 
 def broadcast(body, props):
     channel.basic_publish(exchange='logs', routing_key='',body=body, properties = pika.BasicProperties(correlation_id=props.correlation_id,delivery_mode = 2))
@@ -26,10 +33,11 @@ def main():
     def callback(ch, method, properties, body):
         print(" [x] %s" % body.decode())
         broadcast(body, properties)
+        sendtopassive(body,properties)
 
     channel.basic_consume(
         queue='hello', on_message_callback=callback, auto_ack=True)
-    print(channel.channel_number,' [*] Waiting for messages. To exit press CTRL+C')
+    print(' [*] Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()
 
 
