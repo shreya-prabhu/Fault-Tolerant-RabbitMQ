@@ -21,8 +21,8 @@ def callback(ch,method,properties,body):
 def receive_active():
     connection2 = pika.BlockingConnection(pika.ConnectionParameters(host = "active",port=5672,credentials=pika.PlainCredentials("admin","password"),socket_timeout=10000))
     channel_receive = connection2.channel()
-    print('Receive Thread in Active',connection2.is_open)
-    print('Receive Channel in Active',channel_receive.is_open)
+    #print('Receive Thread in Active',connection2.is_open)
+    #print('Receive Channel in Active',channel_receive.is_open)
 
     result = channel_receive.queue_declare(queue='', exclusive=True)
     queue_name = result.method.queue
@@ -42,10 +42,10 @@ def send_active():
     # global channel_send
     channel_send = connection1.channel()
     corr_id = str(uuid.uuid4())
-    print('Send Thread in Active',connection1.is_open)
-    print('Send Channel in Active',channel_send.is_open)
+    #print('Send Thread in Active',connection1.is_open)
+    #print('Send Channel in Active',channel_send.is_open)
     channel_send.queue_declare(queue='hello',durable = True)
-    print('sending')
+    #print('sending')
     first = username + " has entered the chat"
     channel_send.basic_publish(exchange='', routing_key='hello', properties=pika.BasicProperties(correlation_id=corr_id),body=first)
 
@@ -59,8 +59,8 @@ def receive_passive():
     # global connection2, channel_receive
     connection2 = pika.BlockingConnection(pika.ConnectionParameters(host = "passive",port=5672,credentials=pika.PlainCredentials("admin","password"),socket_timeout=10000))
     channel_receive = connection2.channel()
-    print('Receive Thread',connection2.is_open)
-    print('Receive Channel',channel_receive.is_open)
+    #print('Receive Thread',connection2.is_open)
+    #print('Receive Channel',channel_receive.is_open)
 
     result = channel_receive.queue_declare(queue='', exclusive=True)
     queue_name = result.method.queue
@@ -77,11 +77,11 @@ def send_passive():
     # global channel_send
     channel_send = connection1.channel()
     corr_id = str(uuid.uuid4())
-    print('Send Thread',connection1.is_open)
-    print('Send Channel',channel_send.is_open)
+    #print('Send Thread',connection1.is_open)
+    #print('Send Channel',channel_send.is_open)
 
     channel_send.queue_declare(queue='hello',durable = True)
-    print('sending')
+    #print('sending')
     first = username + " has entered the chat"
     channel_send.basic_publish(exchange='', routing_key='hello', properties=pika.BasicProperties(correlation_id=corr_id),body=first)
 
