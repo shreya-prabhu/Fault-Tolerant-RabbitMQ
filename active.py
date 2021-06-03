@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import pika
 import sys
 import os
@@ -21,11 +19,8 @@ channel2 = connection2.channel()
 def sendtopassive(body,props):
      channel.basic_publish(exchange='', routing_key='active-passive',body=body, properties = pika.BasicProperties(correlation_id=props.correlation_id,delivery_mode = 2))
 
-
-
 def broadcast(body, props):
     channel.basic_publish(exchange='logs', routing_key='',body=body, properties = pika.BasicProperties(correlation_id=props.correlation_id,delivery_mode = 2))
-
 
 def main():
     channel.queue_declare(queue='hello',durable=True,arguments=client_params)
@@ -40,10 +35,8 @@ def main():
     print(' [*] Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()
 
-
 if __name__ == '__main__':
     try:
-
         main()
     except KeyboardInterrupt:
         print('Interrupted')
