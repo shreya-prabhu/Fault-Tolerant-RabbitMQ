@@ -9,8 +9,8 @@ server = ''
 cred = pika.PlainCredentials('admin', 'password')
 connection = pika.BlockingConnection(pika.ConnectionParameters(host = "localhost",port=5672,credentials=cred))
 channel = connection.channel()
-connection2 = pika.BlockingConnection(pika.ConnectionParameters(host = "active",port=5672,credentials=cred))
-channel2 = connection2.channel()
+
+
 client_params = {"x-ha-policy": "all"}
 channel.exchange_declare(exchange='logs', exchange_type='fanout')
 
@@ -19,6 +19,8 @@ def broadcast(body, props):
 
 def from_active():
       try:
+        connection2 = pika.BlockingConnection(pika.ConnectionParameters(host = "active",port=5672,credentials=cred))
+        channel2 = connection2.channel()
         channel2.queue_declare(queue='active-passive',durable=True,arguments=client_params)
         def callback(ch, method, properties, body):
              print(" [x] %s" % body.decode())
