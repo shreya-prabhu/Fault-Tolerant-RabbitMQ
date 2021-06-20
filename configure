@@ -27,8 +27,8 @@ do
             echo "deb https://dl.bintray.com/rabbitmq-erlang/debian buster erlang-22.x" | sudo tee -a /etc/apt/sources.list.d/rabbitmq.list
             sudo apt update
             sudo apt install rabbitmq-server
-            sudo apt install pip
-            python3 -m pip install pika
+            sudo apt install python3-pip
+            pip3 install pika
             ;;
         s)
             echo "Configuring Server"
@@ -48,8 +48,8 @@ do
             rabbitmqctl set_user_tags admin administrator
             rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
             rabbitmqctl delete_user guest
-            sudo apt install pip
-            python3 -m pip install pika
+            sudo apt install python3-pip
+            pip3 install pika
             ;;
         ?)
             usage
