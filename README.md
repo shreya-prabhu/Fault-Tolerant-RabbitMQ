@@ -1,4 +1,4 @@
-# Reliable Messaging Solution with High Availability using Rabbit MQ
+# Reliable Messaging Solution with Fault Tolerance using Rabbit MQ
 To implement fault tolerance in the distributed system.
 
 ### Features
