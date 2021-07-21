@@ -1,5 +1,5 @@
 # Reliable Messaging Solution with High Availability using Rabbit MQ
-To achieve high availability of the distributed system.
+To implement fault tolerance in the distributed system.
 
 ### Features
  - An active standby server which takes the place of the main server whan it has crashed
